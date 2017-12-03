@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var url = require('url');
 var pg = require("pg"); // This is the postgres database connection module.
-const connectionString = "postgres://postgres:gpsa3354@localhost:5432";
+const connectionString = "postgres://postgres:gpsa3354@localhost:5432/postgres";
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -18,7 +18,7 @@ app.get('/', function(request, response) {
   response.render('pages/index');
 });
 app.get('/register', function(request, response) {
-  login(request, response);
+  register(request, response);
 });
 
 app.listen(app.get('port'), function() {
@@ -37,11 +37,12 @@ function register(request, response) {
 
   var email = requestUrl.query.email;
   var phone = requestUrl.query.phone;
+  console.log("here");
 
   insertRegistration(requestUrl, function(error, result) {
 		// This is the callback function that will be called when the DB is done.
 		// The job here is just to send it back.
-
+    console.log("here2");
 		// Make sure we got a row with the reg info, then prepare JSON to send back
 		if (error || result == null || result.length != 1) {
 			response.status(500).json({success: false, data: error});
@@ -58,11 +59,10 @@ function register(request, response) {
 	// Makes sure to pass it the parameters we need.
 	response.render('pages/register', params);
 
-  return weight
 };
 
 function insertRegistration(requestUrl, callback) {
-	console.log("inserting " + requestUrl.pfname + " " + requestUrl.plname);
+	console.log("inserting " + requestUrl.query.pfname + " " + requestUrl.query.plname);
 
 	var client = new pg.Client(connectionString);
 
@@ -73,8 +73,8 @@ function insertRegistration(requestUrl, callback) {
 			callback(err, null);
 		}
 
-		var sql = "SELECT * from parent";
-		var params = [id];
+		var sql = "Insert into Parent (first, last, email, phone) VALUES($1, $2, $3, $4)";
+		var params = [requestUrl.query.pfname, requestUrl.query.plname, requestUrl.query.email, requestUrl.query.phone];
 
 		var query = client.query(sql, params, function(err, result) {
 			// we are now done getting the data from the DB, disconnect the client
