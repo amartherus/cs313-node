@@ -1,5 +1,5 @@
 {
-  "name": "project2",
+  "name": "node-js-getting-started",
   "version": "0.2.6",
   "description": "A sample Node.js app using Express 4",
   "engines": {
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/amartherus/cs313-node"
+    "url": "https://github.com/heroku/node-js-getting-started"
   },
   "keywords": [
     "node",
