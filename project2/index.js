@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var url = require('url');
 var pg = require("pg"); // This is the postgres database connection module.
+
 const connectionString = "postgres://postgres:gpsa3354@localhost:5432/postgres";
 
 app.set('port', (process.env.PORT || 5000));
@@ -19,6 +20,9 @@ app.get('/', function(request, response) {
 });
 app.get('/register', function(request, response) {
   register(request, response);
+});
+app.get('/home', function(request, response) {
+  home(request, response);
 });
 
 app.listen(app.get('port'), function() {
@@ -52,13 +56,6 @@ function register(request, response) {
 		}
 	});
 
-  // Set up a JSON object of the values we want to pass along to the EJS result page
-	var params = {pfname: pfname, plname: plname, cfname: cfname, clname: clname, email: email, phone: phone};
-
-	// Render the response, using the EJS page "result.ejs" in the pages directory
-	// Makes sure to pass it the parameters we need.
-	response.render('pages/register', params);
-
 };
 
 function insertRegistration(requestUrl, callback) {
@@ -76,7 +73,9 @@ function insertRegistration(requestUrl, callback) {
 		var sql = "Insert into Parent (first, last, email, phone) VALUES($1, $2, $3, $4)";
 		var params = [requestUrl.query.pfname, requestUrl.query.plname, requestUrl.query.email, requestUrl.query.phone];
 
+
 		var query = client.query(sql, params, function(err, result) {
+
 			// we are now done getting the data from the DB, disconnect the client
 			client.end(function(err) {
 				if (err) throw err;
@@ -96,4 +95,9 @@ function insertRegistration(requestUrl, callback) {
 		});
 	});
 
-} // end of getPersonFromDb
+} // end of register
+
+function home(request, response) {
+
+  response.render('pages/home');
+}
